@@ -1,14 +1,12 @@
 name: "Deploy to Cloudflare"
 
 on:
-  push:
-    branches:
-      - main
-
+  - push
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
       - name: Publish
@@ -18,6 +16,7 @@ jobs:
   deploy-ci:
     runs-on: ubuntu-latest
     name: Deploy (CI)
+    if: github.ref != 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
       - name: Publish
