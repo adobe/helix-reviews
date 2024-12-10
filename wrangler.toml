@@ -1,6 +1,6 @@
 # Top-level configuration
 account_id = "852dfa4ae1b0d579df29be65b986c101"
-name = "reviews"
+name = "helix-reviews-prod"
 main = "src/index.js"
 compatibility_date = "2023-05-05"
 
