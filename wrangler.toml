@@ -1,0 +1,20 @@
+# Top-level configuration
+account_id = "852dfa4ae1b0d579df29be65b986c101"
+name = "reviews"
+main = "src/index.js"
+compatibility_date = "2023-05-05"
+
+# workers_dev = false
+# route = { pattern = "example.org/*", zone_name = "example.org" }
+
+[vars]
+# Requires following secrets:
+# - GITHUB_TOKEN (GitHub personal access token with repo scope to trigger repository dispatch events)
+
+# [env.staging]
+# name = "my-worker-staging"
+# route = { pattern = "staging.example.org/*", zone_name = "example.org" }
+
+# kv_namespaces = [
+#  { binding = "<MY_NAMESPACE>", id = "<STAGING_KV_ID>" }
+#]
