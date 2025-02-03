@@ -54,7 +54,7 @@
     const hostname = (url.hostname.endsWith(".hlx.reviews") || url.hostname.endsWith(".aem.reviews")) ? url.hostname : "default--main--aem-boilerplate--adobe.aem.reviews";
     const origin = hostname.split(".")[0];
     const [reviewId, ref, repo, owner] = origin.split("--");
-    const aem = owner === 'pfizer' ? 'aem' : 'hlx';
+    const aem = 'aem';
     const adminUrl = `https://${ref}--${repo}--${owner}.${aem}.page/.snapshots/${reviewId}/.manifest.json`;
     console.log("adminurl", adminUrl, request.headers.get("accept-encoding"));
     const newreq = new Request(request);
@@ -131,6 +131,7 @@ Sitemap: https://${url.hostname}/sitemap.xml`;
 
     const req = new Request(url, request);
     req.headers.set("x-forwarded-host", req.headers.get("host"));
+    req.headers.delete("x-push-invalidation");
     const data = await fetch(url.toString(), req);
     let body = data.body;
     if (pages.includes('/metadata.json') && !url.pathname.split('/').pop().includes('.')) {
@@ -139,7 +140,8 @@ Sitemap: https://${url.hostname}/sitemap.xml`;
     const response = new Response(body, data);
     // response.headers.set("content-security-policy", "");
     response.headers.set("x-origin-url", url.toString());
-    response.headers.set("x-debug", `manifest: ${manifestStatus} : ${pathname}: [${pages.join(",")}]`);
+    response.headers.set("x-robots-tag", 'noindex,nofollow');
+    // response.headers.set("x-debug", `manifest: ${manifestStatus} : ${pathname}: [${pages.join(",")}]`);
     return response;
   }
 })();
