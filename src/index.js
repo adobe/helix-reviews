@@ -12,7 +12,7 @@
 
     const rewriteMeta = async (data) => {
       if (data.status !== 200) return data.body;
-      const metadataURL = `https://${ref}--${repo}--${owner}.${aem}.${state}/.snapshots/${reviewId}/metadata.json`;
+      const metadataURL = `https://${ref}--${repo}--${owner}.${aem}.page/.snapshots/${reviewId}/metadata.json`;
       const metaresp = await fetch(metadataURL, request);
       const metadata = await metaresp.json();
       const html = await data.text();
