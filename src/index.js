@@ -75,6 +75,14 @@
     if (resp.status === 200) {
       const json = await resp.json();
       pages.push(...json.resources.map((e) => e.path));
+      if (json.metadata && json.metadata.reviewPassword) {
+        return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
+          status: 401,
+          headers: {
+            "content-type": "text/html"
+          }
+        });
+      }
     }
 
     const createRobots = async () => {
