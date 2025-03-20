@@ -51,7 +51,7 @@
     if (url.pathname.startsWith("/.snapshots/") && !url.pathname.endsWith(".manifest.json")) {
       return createSnapshotRedirect(url.pathname);
     }
-    const hostname = (url.hostname.endsWith(".hlx.reviews") || url.hostname.endsWith(".aem.reviews")) ? url.hostname : "default--main--aem-boilerplate--adobe.aem.reviews";
+    const hostname = (url.hostname.endsWith(".hlx.reviews") || url.hostname.endsWith(".aem.reviews")) ? url.hostname : (url.searchParams.get("hostname") || "default--main--aem-boilerplate--adobe.aem.reviews");
     const origin = hostname.split(".")[0];
     const [reviewId, ref, repo, owner] = origin.split("--");
     const aem = 'aem';
