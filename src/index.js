@@ -94,7 +94,7 @@ import { parse } from 'cookie';
         console.log(cookies.reviewPassword, reviewPasswordHash);
   
         if (cookies.reviewPassword !== reviewPasswordHash) {
-          return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
+          return new Response('<html><head><title>Unauthorized</title><script src="https://labs.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
             status: 401,
             headers: {
               "content-type": "text/html"
