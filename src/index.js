@@ -1,3 +1,5 @@
+import { parse } from 'cookie';
+
 (() => {
   // src/index.js
   addEventListener("fetch", (event) => {
@@ -76,14 +78,41 @@
       const json = await resp.json();
       pages.push(...json.resources.map((e) => e.path));
       if (json.metadata && json.metadata.reviewPassword) {
-        return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
-          status: 401,
-          headers: {
-            "content-type": "text/html"
-          }
-        });
+        const cookies = parse(request.headers.get('cookie') || '');
+        if (!cookies.reviewPassword) {
+          return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
+            status: 401,
+            headers: {
+              "content-type": "text/html"
+            }
+          });
+        }
+
+        const sha256 = async (message) => {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(message);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+          const hash = hashArray
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
+          return hash;
+        };
+
+        const reviewPasswordHash = await sha256(json.metadata.reviewPassword);
+        console.log(cookies.reviewPassword, reviewPasswordHash);
+  
+        if (cookies.reviewPassword !== reviewPasswordHash) {
+          return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
+            status: 401,
+            headers: {
+              "content-type": "text/html"
+            }
+          });
+        }
       }
     }
+
 
     const createRobots = async () => {
       const robots = `User-agent: *
