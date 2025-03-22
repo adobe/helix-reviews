@@ -79,15 +79,6 @@ import { parse } from 'cookie';
       pages.push(...json.resources.map((e) => e.path));
       if (json.metadata && json.metadata.reviewPassword) {
         const cookies = parse(request.headers.get('cookie') || '');
-        if (!cookies.reviewPassword) {
-          return new Response('<html><head><title>Unauthorized</title><script src="https://main--thinktanked--davidnuescheler.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
-            status: 401,
-            headers: {
-              "content-type": "text/html"
-            }
-          });
-        }
-
         const sha256 = async (message) => {
           const encoder = new TextEncoder();
           const data = encoder.encode(message);
