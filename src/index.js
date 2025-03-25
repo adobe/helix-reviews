@@ -1,3 +1,5 @@
+import { parse } from 'cookie';
+
 (() => {
   // src/index.js
   addEventListener("fetch", (event) => {
@@ -51,7 +53,7 @@
     if (url.pathname.startsWith("/.snapshots/") && !url.pathname.endsWith(".manifest.json")) {
       return createSnapshotRedirect(url.pathname);
     }
-    const hostname = (url.hostname.endsWith(".hlx.reviews") || url.hostname.endsWith(".aem.reviews")) ? url.hostname : "default--main--aem-boilerplate--adobe.aem.reviews";
+    const hostname = (url.hostname.endsWith(".hlx.reviews") || url.hostname.endsWith(".aem.reviews")) ? url.hostname : (url.searchParams.get("hostname") || "default--main--aem-boilerplate--adobe.aem.reviews");
     const origin = hostname.split(".")[0];
     const [reviewId, ref, repo, owner] = origin.split("--");
     const aem = 'aem';
@@ -75,7 +77,33 @@
     if (resp.status === 200) {
       const json = await resp.json();
       pages.push(...json.resources.map((e) => e.path));
+      if (json.metadata && json.metadata.reviewPassword) {
+        const cookies = parse(request.headers.get('cookie') || '');
+        const sha256 = async (message) => {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(message);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+          const hash = hashArray
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
+          return hash;
+        };
+
+        const reviewPasswordHash = await sha256(json.metadata.reviewPassword);
+        console.log(cookies.reviewPassword, reviewPasswordHash);
+  
+        if (cookies.reviewPassword !== reviewPasswordHash) {
+          return new Response('<html><head><title>Unauthorized</title><script src="https://labs.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>', {
+            status: 401,
+            headers: {
+              "content-type": "text/html"
+            }
+          });
+        }
+      }
     }
+
 
     const createRobots = async () => {
       const robots = `User-agent: *
