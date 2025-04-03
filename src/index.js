@@ -23,13 +23,13 @@ const DEFAULT_HOSTNAME = 'default--main--aem-boilerplate--adobe.aem.reviews';
 const createMetaTag = (name, value) => `<meta name="${name}" content="${value}">\n`;
 
 /**
- * Parses the hostname to determine if it's a review domain or needs to use a default
- * @param {string} hostname - The hostname from the request URL
+ * Gets the hostname to determine if it's a reviews domain or needs to use a default or passed in hostname
+ * @param {URL} url - The request URL
  * @returns {string} The processed hostname
  */
-const parseHostname = (hostname) => {
-    const isReviewDomain = hostname.endsWith('.hlx.reviews') || hostname.endsWith('.aem.reviews');
-    return isReviewDomain ? hostname : (new URLSearchParams(window.location.search).get('hostname') || DEFAULT_HOSTNAME);
+const getHostname = (url) => {
+    const isReviewsDomain = url.hostname.endsWith('.hlx.reviews') || url.hostname.endsWith('.aem.reviews');
+    return isReviewsDomain ? url.hostname : (new URLSearchParams(url.search).get('hostname') || DEFAULT_HOSTNAME);
 };
 
 /**
@@ -128,7 +128,7 @@ const rewriteMetaTags = async (response, url, reviewInfo) => {
     const metadata = await metadataResponse.json();
     
     const html = await response.text();
-    const [headContent] = html.split('</head>');
+    let [headContent] = html.split('</head>');
     const rules = metadata.data;
 
     rules.forEach((rule) => {
@@ -187,7 +187,7 @@ async function handleRequest(request) {
     }
 
     // Parse hostname and review information
-    const hostname = parseHostname(url.hostname);
+    const hostname = getHostname(url);
     const reviewInfo = extractReviewInfo(hostname);
 
     // Fetch manifest
@@ -233,15 +233,12 @@ async function handleRequest(request) {
                 }
             );
         }
-    }
-
     // Handle content request
     let pathname = url.pathname;
     if (pathname.endsWith('.plain.html')) {
         pathname = pathname.split('.')[0];
     }
 
-    const manifest = await manifestResponse.json();
     const pages = manifest.resources.map(e => e.path);
     const isPageSnapshot = pages.includes(pathname);
     
@@ -272,6 +269,15 @@ async function handleRequest(request) {
     response.headers.set('x-robots-tag', 'noindex,nofollow');
 
     return response;
+
+    } else {
+        return new Response(`Manifest Error (${manifestResponse.status})`, {
+            status: manifestResponse.status,
+            headers: {
+                'content-type': 'text/plain;charset=UTF-8'
+            }
+        });
+    }
 }
 
 // Register the fetch event listener
