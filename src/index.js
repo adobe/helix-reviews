@@ -178,7 +178,7 @@ const checkAuthentication = async (metadata, request) => {
  * @param {Request} request - The incoming request
  * @returns {Promise<Response>} The response to send back to the client
  */
-async function handleRequest(request) {
+export async function handleRequest(request) {
     const url = new URL(request.url);
 
     // Handle snapshot redirects
