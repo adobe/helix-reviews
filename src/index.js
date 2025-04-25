@@ -282,5 +282,6 @@ async function handleRequest(request) {
 
 // Register the fetch event listener
 addEventListener('fetch', (event) => {
+    console.log('fetch', event.request.url);
     event.respondWith(handleRequest(event.request));
 });
