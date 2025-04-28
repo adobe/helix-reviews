@@ -179,7 +179,16 @@ const checkAuthentication = async (metadata, request) => {
  * @returns {Promise<Response>} The response to send back to the client
  */
 async function handleRequest(request) {
+  try {
     const url = new URL(request.url);
+
+    const { method, headers } = request;
+
+    // disable conditional requests
+    let m = new Map(headers);
+    m.delete('if-none-match');
+    m.delete('if-modified-since');
+    const incomingRequest = new Request(url, { method, headers: Object.fromEntries(m) });
 
     // Handle snapshot redirects
     if (url.pathname.startsWith('/.snapshots/') && !url.pathname.endsWith('.manifest.json')) {
@@ -192,7 +201,7 @@ async function handleRequest(request) {
 
     // Fetch manifest
     const manifestUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
-    const manifestRequest = new Request(request);
+    const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
     
     const manifestResponse = await fetch(manifestUrl, manifestRequest);
@@ -252,7 +261,7 @@ async function handleRequest(request) {
         url.hostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.${isPageSnapshot ? 'page' : 'live'}`;
     }
 
-    const contentRequest = new Request(url, request);
+    const contentRequest = new Request(url, incomingRequest);
     contentRequest.headers.set('x-forwarded-host', contentRequest.headers.get('host'));
     contentRequest.headers.delete('x-push-invalidation');
 
@@ -278,6 +287,10 @@ async function handleRequest(request) {
             }
         });
     }
+  } catch (error) {
+    console.error('Error in handleRequest:', error, error.stack);
+    return new Response(`Internal Server Error: ${error.message}`, { status: 500 });
+  }
 }
 
 // Register the fetch event listener
