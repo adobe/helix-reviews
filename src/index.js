@@ -123,11 +123,11 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
  * @param {Object} reviewInfo - Review information object
  * @returns {string} The modified HTML content
  */
-const rewriteMetaTags = async (response, url, reviewInfo) => {
+const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
     if (response.status !== 200) return response.body;
 
     const metadataUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
-    const metadataResponse = await fetch(metadataUrl);
+    const metadataResponse = await fetch(metadataUrl, incomingRequest);
     const metadata = await metadataResponse.json();
     
     const html = await response.text();
@@ -273,7 +273,7 @@ async function handleRequest(request) {
 
     // Rewrite meta tags if needed
     if (pages.includes('/metadata.json') && !url.pathname.split('/').pop().includes('.')) {
-        body = await rewriteMetaTags(contentResponse, url, reviewInfo);
+        body = await rewriteMetaTags(contentResponse, url, reviewInfo, incomingRequest);
     }
 
     const response = new Response(body, contentResponse);
