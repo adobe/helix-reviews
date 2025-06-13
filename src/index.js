@@ -126,8 +126,11 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
 const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
     if (response.status !== 200) return response.body;
 
+    const metadataRequest = new Request(incomingRequest);
+    metadataRequest.headers.set('accept-encoding', 'identity');
+
     const metadataUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
-    const metadataResponse = await fetch(metadataUrl, incomingRequest);
+    const metadataResponse = await fetch(metadataUrl, metadataRequest);
     const metadata = await metadataResponse.json();
     
     const html = await response.text();
