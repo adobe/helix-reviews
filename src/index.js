@@ -86,11 +86,14 @@ Sitemap: https://${hostname}/sitemap.xml`;
  * @param {Object} reviewInfo - Review information object
  * @returns {Response} A response containing the sitemap XML
  */
-const generateSitemap = async (hostname, pages, reviewInfo) => {
+const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => {
     const indexedPages = [];
     try {
+        const sitemapRequest = new Request(incomingRequest);
+        sitemapRequest.headers.set('accept-encoding', 'identity');
+        
         const sitemapUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/sitemap.xml`;
-        const sitemapResp = await fetch(sitemapUrl);
+        const sitemapResp = await fetch(sitemapUrl, sitemapRequest);
         const xml = await sitemapResp.text();
         const regexp = /<loc>(.*?)<\/loc>/g;
         const sitemapLocs = [...xml.matchAll(regexp)].map((e) => new URL(e[1]).pathname);
@@ -219,7 +222,7 @@ async function handleRequest(request) {
     // Handle special routes
     if (url.pathname === '/sitemap.xml' || url.pathname === '/sitemap-origin.xml') {
         const manifest = await manifestResponse.json();
-        return generateSitemap(hostname, manifest.resources.map(e => e.path), reviewInfo);
+        return generateSitemap(hostname, manifest.resources.map(e => e.path), reviewInfo, incomingRequest);
     }
 
     if (url.pathname === '/robots.txt') {
