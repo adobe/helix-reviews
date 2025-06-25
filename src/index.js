@@ -182,9 +182,10 @@ const checkAuthentication = async (metadata, request) => {
  * Main request handler for the Cloudflare Worker
  * Handles routing, authentication, and content delivery for the review system
  * @param {Request} request - The incoming request
+ * @param {Object} env - The environment variables
  * @returns {Promise<Response>} The response to send back to the client
  */
-async function handleRequest(request) {
+async function handleRequest(request, env) {
   try {
     const url = new URL(request.url);
 
@@ -209,6 +210,9 @@ async function handleRequest(request) {
     const manifestUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
     const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
+    if (env[`${reviewInfo.owner}-org-token`]) {
+        manifestRequest.headers.set('authorization', `token ${env[`${reviewInfo.owner}-org-token`]}`);
+    }
     
     const manifestResponse = await fetch(manifestUrl, manifestRequest);
 
@@ -270,6 +274,9 @@ async function handleRequest(request) {
     const contentRequest = new Request(url, incomingRequest);
     contentRequest.headers.set('x-forwarded-host', contentRequest.headers.get('host'));
     contentRequest.headers.delete('x-push-invalidation');
+    if (isAuthenticated && env[`${reviewInfo.owner}-org-token`]) {
+        contentRequest.headers.set('authorization', `token ${env[`${reviewInfo.owner}-org-token`]}`);
+    }
 
     const contentResponse = await fetch(url.toString(), contentRequest);
     let body = contentResponse.body;
@@ -302,5 +309,5 @@ async function handleRequest(request) {
 // Register the fetch event listener
 addEventListener('fetch', (event) => {
     console.log('fetch', event.request.url);
-    event.respondWith(handleRequest(event.request));
+    event.respondWith(handleRequest(event.request, event.env));
 });
