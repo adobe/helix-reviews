@@ -306,8 +306,8 @@ async function handleRequest(request, env) {
   }
 }
 
-// Register the fetch event listener
-addEventListener('fetch', (event) => {
-    console.log('fetch', event.request.url);
-    event.respondWith(handleRequest(event.request, event.env));
-});
+export default {
+    async fetch(request, env) {
+        return handleRequest(request, env);
+    }
+}
