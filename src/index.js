@@ -27,9 +27,10 @@ const createMetaTag = (name, value) => `<meta name="${name}" content="${value}">
  * @param {URL} url - The request URL
  * @returns {string} The processed hostname
  */
-const getHostname = (url) => {
+const getHostname = (url, request) => {
     const isReviewsDomain = url.hostname.endsWith('.hlx.reviews') || url.hostname.endsWith('.aem.reviews');
-    return isReviewsDomain ? url.hostname : (new URLSearchParams(url.search).get('hostname') || DEFAULT_HOSTNAME);
+    const cookies = parse(request.headers.get('cookie') || '');
+    return isReviewsDomain ? url.hostname : (cookies.reviewHostname || new URLSearchParams(url.search).get('hostname') || DEFAULT_HOSTNAME);
 };
 
 /**
@@ -203,7 +204,7 @@ async function handleRequest(request, env) {
     }
 
     // Parse hostname and review information
-    const hostname = getHostname(url);
+    const hostname = getHostname(url, request);
     const reviewInfo = extractReviewInfo(hostname);
 
     // Fetch manifest
