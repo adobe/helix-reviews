@@ -210,6 +210,8 @@ async function handleRequest(request, env) {
     const manifestUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
     const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
+    // since we re-use incoming request headers, we don't want to end up fetching partial manifests
+    manifestRequest.headers.delete('range');
     if (env[`${reviewInfo.owner}-org-token`]) {
         manifestRequest.headers.set('authorization', `token ${env[`${reviewInfo.owner}-org-token`]}`);
     }
