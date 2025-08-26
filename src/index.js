@@ -160,10 +160,14 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
  * Checks if the request is authenticated using the review password
  * @param {Object} metadata - The review metadata containing the password
  * @param {Request} request - The original request
+ * @param {Object} reviewInfo - Review information object
+ * @param {Object} env - The environment variables
  * @returns {Promise<boolean>} Whether the request is authenticated
  */
-const checkAuthentication = async (metadata, request) => {
+const checkAuthentication = async (metadata, request, reviewInfo, env) => {
+    const authHeader = request.headers.get('authorization');
     if (!metadata?.reviewPassword) return true;
+    if (authHeader && authHeader === `token ${env[`${reviewInfo.owner}-org-token`]}`) return true;
 
     const cookies = parse(request.headers.get('cookie') || '');
     const sha256 = async (message) => {
@@ -241,8 +245,7 @@ async function handleRequest(request, env) {
     // Check authentication
     if (manifestResponse.status === 200) {
         const manifest = await manifestResponse.json();
-        const isAuthenticated = await checkAuthentication(manifest.metadata, request);
-        
+        const isAuthenticated = await checkAuthentication(manifest.metadata, request, reviewInfo, env);
         if (!isAuthenticated) {
             return new Response(
                 '<html><head><title>Unauthorized</title><script src="https://labs.aem.live/tools/snapshot-admin/401.js"></script></head><body><h1>Unauthorized</h1></body>',
