@@ -165,9 +165,8 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
  * @returns {Promise<boolean>} Whether the request is authenticated
  */
 const checkAuthentication = async (metadata, request, reviewInfo, env) => {
-    const authHeader = request.headers.get('authorization');
     if (!metadata?.reviewPassword) return true;
-    if (authHeader && authHeader === `token ${env[`${reviewInfo.owner}-org-token`]}`) return true;
+    if (request.headers.get('authorization') === `token ${env[`${reviewInfo.owner}-org-token`]}`) return true;
 
     const cookies = parse(request.headers.get('cookie') || '');
     const sha256 = async (message) => {
