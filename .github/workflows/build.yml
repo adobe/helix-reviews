@@ -24,7 +24,7 @@ jobs:
     # Deploy to CI environment
     - name: Deploy to CI
       env:
-        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_KEY }}
       run: npm run deploy-ci || echo "CI deployment not configured"
     
     # Upload coverage if tests exist

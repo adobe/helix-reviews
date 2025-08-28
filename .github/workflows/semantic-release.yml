@@ -22,4 +22,4 @@ jobs:
         CORALOGIX_TAGGER_API_KEY: ${{ secrets.CORALOGIX_TAGGER_API_KEY }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         # Deployment variables
-        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_KEY }}
