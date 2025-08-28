@@ -7,6 +7,10 @@ on:
 jobs:
   semantic_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
     - uses: actions/checkout@v4
@@ -18,7 +22,7 @@ jobs:
     - name: Semantic Release
       run: npm run semantic-release
       env:
-        GITHUB_TOKEN: ${{ secrets.ADOBE_BOT_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CORALOGIX_TAGGER_API_KEY: ${{ secrets.CORALOGIX_TAGGER_API_KEY }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         # Deployment variables
