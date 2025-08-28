@@ -1,0 +1,41 @@
+{
+  "name": "@adobe/helix-reviews",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for AEM Review System",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "c8 mocha --spec test/*.test.js --recursive",
+    "lint": "eslint .",
+    "semantic-release": "semantic-release",
+    "deploy": "wrangler deploy",
+    "deploy-ci": "wrangler deploy --env ci",
+    "dev": "wrangler dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/helix-reviews"
+  },
+  "author": "Adobe",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/adobe/helix-reviews/issues"
+  },
+  "homepage": "https://github.com/adobe/helix-reviews#readme",
+  "devDependencies": {
+    "@adobe/eslint-config-helix": "2.0.8",
+    "@adobe/semantic-release-coralogix": "1.1.32",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/exec": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "c8": "10.1.3",
+    "eslint": "8.57.1",
+    "mocha": "10.8.2",
+    "semantic-release": "24.2.0",
+    "semantic-release-slack-bot": "4.0.2",
+    "wrangler": "3.100.0"
+  },
+  "dependencies": {
+    "cookie": "1.0.2"
+  }
+}
