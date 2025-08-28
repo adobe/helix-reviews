@@ -13,9 +13,11 @@
 import assert from 'assert';
 import { describe, it } from 'node:test';
 
-const domain = process.env.CI
-  ? 'helix-reviews-ci.helix-reviews.workers.dev'
-  : 'helix-reviews-prod.aem.reviews';
+// For CI, we test against the worker directly with query parameters
+// For production, we would test against the actual reviews domain
+const baseUrl = process.env.CI
+  ? 'https://helix-reviews-ci.adobeaem.workers.dev'
+  : 'https://default--main--aem-boilerplate--adobe.aem.reviews';
 
 describe('Helix Reviews Post-Deploy Validation', () => {
   it('Returns 404 for non-existent review', async function test() {
@@ -23,7 +25,8 @@ describe('Helix Reviews Post-Deploy Validation', () => {
       this.skip();
     }
 
-    const response = await fetch(`https://nonexistent--main--test--adobe.${domain}/`, {
+    // Pass a non-existent review hostname via query parameter
+    const response = await fetch(`${baseUrl}/?hostname=nonexistent--main--test--adobe.aem.reviews`, {
       method: 'GET',
     });
     assert.strictEqual(response.status, 404);
@@ -36,9 +39,8 @@ describe('Helix Reviews Post-Deploy Validation', () => {
       this.skip();
     }
 
-    // Use a valid review for testing
-    const testDomain = `default--main--aem-boilerplate--adobe.${domain}`;
-    const response = await fetch(`https://${testDomain}/robots.txt`, {
+    // Test robots.txt with a valid hostname
+    const response = await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
     assert.strictEqual(response.status, 200);
@@ -47,7 +49,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     const text = await response.text();
     assert(text.includes('User-agent: *'), 'Should contain User-agent directive');
     assert(text.includes('Allow: /'), 'Should allow crawling');
-    assert(text.includes(`Sitemap: https://${testDomain}/sitemap.xml`), 'Should include sitemap URL');
+    assert(text.includes('Sitemap: https://default--main--aem-boilerplate--adobe.aem.reviews/sitemap.xml'), 'Should include sitemap URL');
   });
 
   it('Manifest 404 returns proper error', async function test() {
@@ -56,7 +58,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     }
 
     // Test with review ID that should not exist
-    const response = await fetch(`https://review404--main--test--adobe.${domain}/`, {
+    const response = await fetch(`${baseUrl}/?hostname=review404--main--test--adobe.aem.reviews`, {
       method: 'GET',
     });
     assert.strictEqual(response.status, 404);
@@ -78,8 +80,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     }
 
     // Test snapshot redirect functionality
-    const testDomain = `default--main--aem-boilerplate--adobe.${domain}`;
-    const response = await fetch(`https://${testDomain}/.snapshots/test123/index.html`, {
+    const response = await fetch(`${baseUrl}/.snapshots/test123/index.html?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
       redirect: 'manual',
     });
@@ -95,13 +96,12 @@ describe('Helix Reviews Post-Deploy Validation', () => {
       this.skip();
     }
 
-    const testDomain = `default--main--aem-boilerplate--adobe.${domain}`;
-    const response = await fetch(`https://${testDomain}/robots.txt`, {
+    const response = await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
     
     // Check for x-robots-tag header on regular content
-    const contentResponse = await fetch(`https://${testDomain}/`, {
+    const contentResponse = await fetch(`${baseUrl}/?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
     
@@ -121,8 +121,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     }
 
     const startTime = Date.now();
-    const testDomain = `default--main--aem-boilerplate--adobe.${domain}`;
-    const response = await fetch(`https://${testDomain}/robots.txt`, {
+    const response = await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
     
