@@ -10,8 +10,11 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-env mocha */
+/* global global */
 import assert from 'assert';
-import { describe, it, mock, beforeEach } from 'node:test';
+import {
+  describe, it, mock, beforeEach,
+} from 'node:test';
 import worker from '../src/index.js';
 
 describe('Helix Reviews Worker', () => {
@@ -83,10 +86,27 @@ describe('Helix Reviews Worker', () => {
     });
   });
 
+  describe('getBaseHostname helper', () => {
+    it('correctly constructs base hostname with AEM domain', async () => {
+      // Test through actual usage in the worker
+      const request = new Request('https://review123--main--test-repo--adobe.aem.reviews/');
+      await worker.fetch(request, env, ctx);
+
+      // The function should construct: main--test-repo--adobe.aem
+      // We'll verify this through the fetch calls
+      const fetchCalls = global.fetch.mock.calls;
+      const manifestCall = fetchCalls.find((call) => call.arguments[0].includes('.manifest.json'));
+      assert(manifestCall, 'Should have made a manifest call');
+
+      const manifestUrl = manifestCall.arguments[0];
+      assert(manifestUrl.includes('main--test-repo--adobe.aem'), 'Should use getBaseHostname helper correctly');
+    });
+  });
+
   describe('baseHostname construction', () => {
     it('constructs correct baseHostname with AEM domain for manifest URL', async () => {
       const request = new Request('https://review123--main--test-repo--adobe.aem.reviews/');
-      const response = await worker.fetch(request, env, ctx);
+      await worker.fetch(request, env, ctx);
 
       // Check that fetch was called with the correct manifest URL
       const fetchCalls = global.fetch.mock.calls;
@@ -128,7 +148,7 @@ describe('Helix Reviews Worker', () => {
 
       // This should NOT redirect because it ends with .manifest.json
       assert.strictEqual(response.status, 200, 'Manifest.json requests should not redirect');
-      
+
       if (response.status === 200) {
         const originUrl = response.headers.get('x-origin-url');
         assert(originUrl, 'Should have x-origin-url header');
@@ -182,7 +202,7 @@ describe('Helix Reviews Worker', () => {
 
       assert.strictEqual(response.status, 200);
       assert.strictEqual(response.headers.get('content-type'), 'text/xml;charset=UTF-8');
-      
+
       const text = await response.text();
       assert(text.includes('<urlset'));
       assert(text.includes('review123--main--test--adobe.aem.reviews'));
@@ -193,9 +213,9 @@ describe('Helix Reviews Worker', () => {
       await worker.fetch(request, env, ctx);
 
       const fetchCalls = global.fetch.mock.calls;
-      const sitemapCall = fetchCalls.find((call) => call.arguments[0].includes('/sitemap.xml') 
+      const sitemapCall = fetchCalls.find((call) => call.arguments[0].includes('/sitemap.xml')
         && !call.arguments[0].includes('review123--'));
-      
+
       if (sitemapCall) {
         const sitemapUrl = sitemapCall.arguments[0];
         assert(sitemapUrl.includes('main--test--adobe.aem.page'), 'Should fetch from baseHostname.page');
@@ -217,7 +237,7 @@ describe('Helix Reviews Worker', () => {
     it('handles authentication with org token', async () => {
       env['adobe-org-token'] = 'test-token';
       const request = new Request('https://review123--main--test--adobe.aem.reviews/');
-      
+
       await worker.fetch(request, env, ctx);
 
       const fetchCalls = global.fetch.mock.calls;
@@ -255,9 +275,8 @@ describe('Helix Reviews Worker', () => {
       await worker.fetch(request, env, ctx);
 
       const fetchCalls = global.fetch.mock.calls;
-      const metadataCall = fetchCalls.find((call) => 
-        call.arguments[0].includes('/metadata.json') && 
-        call.arguments[0].includes('/.snapshots/'));
+      const metadataCall = fetchCalls.find((call) => call.arguments[0].includes('/metadata.json')
+        && call.arguments[0].includes('/.snapshots/'));
 
       if (metadataCall) {
         const metadataUrl = metadataCall.arguments[0];
