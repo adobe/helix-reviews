@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-env mocha */
+/* global process */
 import assert from 'assert';
 import { describe, it } from 'node:test';
 
@@ -45,7 +46,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     });
     assert.strictEqual(response.status, 200);
     assert.strictEqual(response.headers.get('content-type'), 'text/plain;charset=UTF-8');
-    
+
     const text = await response.text();
     assert(text.includes('User-agent: *'), 'Should contain User-agent directive');
     assert(text.includes('Allow: /'), 'Should allow crawling');
@@ -84,7 +85,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
       method: 'GET',
       redirect: 'manual',
     });
-    
+
     // Should redirect (302)
     assert.strictEqual(response.status, 302);
     const location = response.headers.get('location');
@@ -96,15 +97,15 @@ describe('Helix Reviews Post-Deploy Validation', () => {
       this.skip();
     }
 
-    const response = await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
+    await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
-    
+
     // Check for x-robots-tag header on regular content
     const contentResponse = await fetch(`${baseUrl}/?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
-    
+
     // If successful, should have noindex,nofollow
     if (contentResponse.status === 200) {
       assert.strictEqual(
@@ -124,7 +125,7 @@ describe('Helix Reviews Post-Deploy Validation', () => {
     const response = await fetch(`${baseUrl}/robots.txt?hostname=default--main--aem-boilerplate--adobe.aem.reviews`, {
       method: 'GET',
     });
-    
+
     assert.strictEqual(response.status, 200);
     const duration = Date.now() - startTime;
     assert(duration < 5000, `Response took ${duration}ms, should be under 5000ms`);
