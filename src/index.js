@@ -57,6 +57,13 @@ const extractReviewInfo = (hostname) => {
 };
 
 /**
+ * Constructs the base hostname for AEM URLs from review information
+ * @param {Object} reviewInfo - Object containing ref, repo, and owner
+ * @returns {string} The base hostname including AEM domain
+ */
+const getBaseHostname = (reviewInfo) => `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}`;
+
+/**
  * Creates a redirect response for snapshot URLs
  * Removes the /.snapshots/{reviewId} prefix from the path
  * @param {string} pathname - The original pathname
@@ -104,7 +111,7 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
     const sitemapRequest = new Request(incomingRequest);
     sitemapRequest.headers.set('accept-encoding', 'identity');
 
-    const sitemapUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/sitemap.xml`;
+    const sitemapUrl = `https://${getBaseHostname(reviewInfo)}.page/sitemap.xml`;
     const sitemapResp = await fetch(sitemapUrl, sitemapRequest);
     const xml = await sitemapResp.text();
     const regexp = /<loc>(.*?)<\/loc>/g;
@@ -142,7 +149,7 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
   const metadataRequest = new Request(incomingRequest);
   metadataRequest.headers.set('accept-encoding', 'identity');
 
-  const metadataUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
+  const metadataUrl = `https://${getBaseHostname(reviewInfo)}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
   const metadataResponse = await fetch(metadataUrl, metadataRequest);
   const metadata = await metadataResponse.json();
 
@@ -225,7 +232,7 @@ async function handleRequest(request, env) {
     const reviewInfo = extractReviewInfo(hostname);
 
     // Fetch manifest
-    const manifestUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
+    const manifestUrl = `https://${getBaseHostname(reviewInfo)}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
     const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
     // since we re-use incoming request headers, we don't want to end up fetching partial manifests
@@ -291,12 +298,12 @@ async function handleRequest(request, env) {
         url.pathname = `/.snapshots/${reviewInfo.reviewId}${url.pathname}`;
       }
 
-      const baseHostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}`;
+      const baseHostname = getBaseHostname(reviewInfo);
       if (url.pathname.endsWith('/.manifest.json')) {
-        url.hostname = `${baseHostname}.${AEM_DOMAIN}.page`;
+        url.hostname = `${baseHostname}.page`;
       } else {
         const subdomain = isPageSnapshot ? 'page' : 'live';
-        url.hostname = `${baseHostname}.${AEM_DOMAIN}.${subdomain}`;
+        url.hostname = `${baseHostname}.${subdomain}`;
       }
 
       const contentRequest = new Request(url, incomingRequest);
