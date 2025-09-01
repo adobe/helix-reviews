@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/adobe/helix-reviews/compare/v1.1.0...v1.1.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* address PR review comments - restore console.log and simplify destructuring ([d8c7c1c](https://github.com/adobe/helix-reviews/commit/d8c7c1ce5f87d26d8dd18ea2f593160443ebe4ee))
+* make codebase ESLint compliant ([da5cbb5](https://github.com/adobe/helix-reviews/commit/da5cbb5c728af6d8a7039eb04fff23eb58dbc020))
+* use proper destructuring where ESLint requires it ([97a93fb](https://github.com/adobe/helix-reviews/commit/97a93fb52e504e84ea9ef6060a743e47479bc4ad))
+
 # [1.1.0](https://github.com/adobe/helix-reviews/compare/v1.0.0...v1.1.0) (2025-09-01)
 
 
