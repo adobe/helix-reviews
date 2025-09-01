@@ -104,7 +104,8 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
     const sitemapRequest = new Request(incomingRequest);
     sitemapRequest.headers.set('accept-encoding', 'identity');
 
-    const sitemapUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/sitemap.xml`;
+    const baseHostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}`;
+    const sitemapUrl = `https://${baseHostname}.page/sitemap.xml`;
     const sitemapResp = await fetch(sitemapUrl, sitemapRequest);
     const xml = await sitemapResp.text();
     const regexp = /<loc>(.*?)<\/loc>/g;
@@ -142,7 +143,8 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
   const metadataRequest = new Request(incomingRequest);
   metadataRequest.headers.set('accept-encoding', 'identity');
 
-  const metadataUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
+  const baseHostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}`;
+  const metadataUrl = `https://${baseHostname}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
   const metadataResponse = await fetch(metadataUrl, metadataRequest);
   const metadata = await metadataResponse.json();
 
@@ -225,7 +227,8 @@ async function handleRequest(request, env) {
     const reviewInfo = extractReviewInfo(hostname);
 
     // Fetch manifest
-    const manifestUrl = `https://${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
+    const baseHostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}.${AEM_DOMAIN}`;
+    const manifestUrl = `https://${baseHostname}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
     const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
     // since we re-use incoming request headers, we don't want to end up fetching partial manifests
@@ -291,12 +294,11 @@ async function handleRequest(request, env) {
         url.pathname = `/.snapshots/${reviewInfo.reviewId}${url.pathname}`;
       }
 
-      const baseHostname = `${reviewInfo.ref}--${reviewInfo.repo}--${reviewInfo.owner}`;
       if (url.pathname.endsWith('/.manifest.json')) {
-        url.hostname = `${baseHostname}.${AEM_DOMAIN}.page`;
+        url.hostname = `${baseHostname}.page`;
       } else {
         const subdomain = isPageSnapshot ? 'page' : 'live';
-        url.hostname = `${baseHostname}.${AEM_DOMAIN}.${subdomain}`;
+        url.hostname = `${baseHostname}.${subdomain}`;
       }
 
       const contentRequest = new Request(url, incomingRequest);
