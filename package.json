@@ -1,15 +1,16 @@
 {
   "name": "@adobe/helix-reviews",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cloudflare Worker for AEM Review System",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "c8 mocha --spec test/*.test.js --recursive",
+    "test": "node --test --experimental-test-coverage --test-reporter=spec --test-skip-pattern=Post-Deploy",
+    "test-postdeploy": "TEST_INTEGRATION=true node --test --test-reporter=spec --test-name-pattern=Post-Deploy",
     "lint": "eslint .",
     "semantic-release": "semantic-release",
     "deploy": "wrangler deploy",
-    "deploy-ci": "wrangler deploy --env ci",
+    "deploy-ci": "wrangler deploy --config wrangler-ci.toml",
     "dev": "wrangler dev"
   },
   "repository": {
@@ -33,7 +34,7 @@
     "mocha": "10.8.2",
     "semantic-release": "24.2.0",
     "semantic-release-slack-bot": "4.0.2",
-    "wrangler": "3.100.0"
+    "wrangler": "4.33.0"
   },
   "dependencies": {
     "cookie": "1.0.2"

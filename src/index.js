@@ -172,10 +172,15 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
  * Checks if the request is authenticated using the review password
  * @param {Object} metadata - The review metadata containing the password
  * @param {Request} request - The original request
+ * @param {Object} reviewInfo - Review information object
+ * @param {Object} env - The environment variables
  * @returns {Promise<boolean>} Whether the request is authenticated
  */
-const checkAuthentication = async (metadata, request) => {
+const checkAuthentication = async (metadata, request, reviewInfo, env) => {
   if (!metadata?.reviewPassword) return true;
+  const authHeader = request.headers.get('authorization');
+  const orgToken = env[`${reviewInfo.owner}-org-token`];
+  if (authHeader === `token ${orgToken}`) return true;
 
   const cookies = parse(request.headers.get('cookie') || '');
   const sha256 = async (message) => {
@@ -254,7 +259,12 @@ async function handleRequest(request, env) {
     // Check authentication
     if (manifestResponse.status === 200) {
       const manifest = await manifestResponse.json();
-      const isAuthenticated = await checkAuthentication(manifest.metadata, request);
+      const isAuthenticated = await checkAuthentication(
+        manifest.metadata,
+        request,
+        reviewInfo,
+        env,
+      );
 
       if (!isAuthenticated) {
         const unauthorizedHtml = '<html><head><title>Unauthorized</title>'
