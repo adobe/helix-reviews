@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/adobe/helix-reviews/compare/v1.0.0...v1.1.0) (2025-09-01)
+
+
+### Features
+
+* Protected content allow passing an auth token ([#13](https://github.com/adobe/helix-reviews/issues/13)) ([8c18e85](https://github.com/adobe/helix-reviews/commit/8c18e85e8e4d40be745fedb9ee4ee6186f1a98bd))
+
 # 1.0.0 (2025-08-28)
 
 
