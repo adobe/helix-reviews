@@ -279,11 +279,9 @@ async function handleRequest(request, env) {
         });
       }
       // Handle content request
-      // eslint-disable-next-line prefer-destructuring
-      let pathname = url.pathname;
+      let { pathname } = url;
       if (pathname.endsWith('.plain.html')) {
-        // eslint-disable-next-line prefer-destructuring
-        pathname = pathname.split('.')[0];
+        [pathname] = pathname.split('.');
       }
 
       const pages = manifest.resources.map((e) => e.path);
