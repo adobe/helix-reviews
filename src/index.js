@@ -111,7 +111,8 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
     const sitemapLocs = [...xml.matchAll(regexp)].map((e) => new URL(e[1]).pathname);
     indexedPages.push(...sitemapLocs);
   } catch (error) {
-    // No sitemap index found - this is expected for some repos
+    // eslint-disable-next-line no-console
+    console.log('No sitemap index found');
   }
 
   const allPages = [...new Set([...pages, ...indexedPages])];
@@ -278,13 +279,15 @@ async function handleRequest(request, env) {
         });
       }
       // Handle content request
-      let [pathname] = [url.pathname];
+      // eslint-disable-next-line prefer-destructuring
+      let pathname = url.pathname;
       if (pathname.endsWith('.plain.html')) {
-        [pathname] = pathname.split('.');
+        // eslint-disable-next-line prefer-destructuring
+        pathname = pathname.split('.')[0];
       }
 
       const pages = manifest.resources.map((e) => e.path);
-      const [isPageSnapshot] = [pages.includes(pathname)];
+      const isPageSnapshot = pages.includes(pathname);
 
       if (isPageSnapshot) {
         url.pathname = `/.snapshots/${reviewInfo.reviewId}${url.pathname}`;
