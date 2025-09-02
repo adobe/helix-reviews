@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/adobe/helix-reviews#readme",
   "devDependencies": {
-    "@adobe/eslint-config-helix": "2.0.8",
+    "@adobe/eslint-config-helix": "2.0.9",
     "@adobe/semantic-release-coralogix": "1.1.32",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
