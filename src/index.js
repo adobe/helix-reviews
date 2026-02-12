@@ -276,7 +276,7 @@ async function handleRequest(request, env) {
 
       if (!isAuthenticated) {
         const unauthorizedHtml = '<html><head><title>Unauthorized</title>'
-          + '<script src="https://labs.aem.live/tools/snapshot-admin/401.js"></script>'
+          + '<script src="https://tools.aem.live/tools/snapshot-admin/401.js"></script>'
           + '</head><body><h1>Unauthorized</h1></body>';
         return new Response(unauthorizedHtml, {
           status: 401,
