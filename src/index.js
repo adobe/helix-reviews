@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { parse } from 'cookie';
+import { parseCookie } from 'cookie';
 
 // Constants
 const AEM_DOMAIN = 'aem';
@@ -190,7 +190,7 @@ const checkAuthentication = async (metadata, request, reviewInfo, env) => {
   const orgToken = env[`${reviewInfo.owner}-org-token`];
   if (authHeader === `token ${orgToken}`) return true;
 
-  const cookies = parse(request.headers.get('cookie') || '');
+  const cookies = parseCookie(request.headers.get('cookie') || '');
   const sha256 = async (message) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
