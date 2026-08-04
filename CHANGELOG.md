@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/adobe/helix-reviews/compare/v1.1.1...v1.1.2) (2026-08-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cookie to v2 ([#44](https://github.com/adobe/helix-reviews/issues/44)) ([fbd2d5f](https://github.com/adobe/helix-reviews/commit/fbd2d5f5457bfcb4e1c6c7827de2a9a70f0bf699))
+
 ## [1.1.1](https://github.com/adobe/helix-reviews/compare/v1.1.0...v1.1.1) (2025-09-01)
 
 
