@@ -36,6 +36,6 @@
     "wrangler": "4.33.0"
   },
   "dependencies": {
-    "cookie": "1.0.2"
+    "cookie": "2.0.1"
   }
 }
