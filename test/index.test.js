@@ -269,6 +269,78 @@ describe('Helix Reviews Worker', () => {
     });
   });
 
+  describe('x-forwarded-host header', () => {
+    it('sets x-forwarded-host to the original host on the content request', async () => {
+      const request = new Request('https://review123--main--test--adobe.aem.reviews/', {
+        headers: { host: 'review123--main--test--adobe.aem.reviews' },
+      });
+      await worker.fetch(request, env, ctx);
+
+      const fetchCalls = global.fetch.mock.calls;
+      const contentCall = fetchCalls.find((call) => {
+        const req = call.arguments[1];
+        return req?.headers?.get('x-forwarded-host') && !call.arguments[0].includes('.manifest.json')
+          && !call.arguments[0].includes('/sitemap.xml') && !call.arguments[0].includes('/metadata.json');
+      });
+
+      assert(contentCall, 'Should have made a content request with x-forwarded-host set');
+      assert.strictEqual(
+        contentCall.arguments[1].headers.get('x-forwarded-host'),
+        'review123--main--test--adobe.aem.reviews',
+      );
+    });
+
+    it('sets x-forwarded-host to the original host on the manifest request', async () => {
+      const request = new Request('https://review123--main--test--adobe.aem.reviews/', {
+        headers: { host: 'review123--main--test--adobe.aem.reviews' },
+      });
+      await worker.fetch(request, env, ctx);
+
+      const fetchCalls = global.fetch.mock.calls;
+      const manifestCall = fetchCalls.find((call) => call.arguments[0].includes('.manifest.json'));
+
+      assert(manifestCall, 'Should have fetched manifest');
+      assert.strictEqual(
+        manifestCall.arguments[1].headers.get('x-forwarded-host'),
+        'review123--main--test--adobe.aem.reviews',
+      );
+    });
+
+    it('sets x-forwarded-host to the original host on the sitemap request', async () => {
+      const request = new Request('https://review123--main--test--adobe.aem.reviews/sitemap-origin.xml', {
+        headers: { host: 'review123--main--test--adobe.aem.reviews' },
+      });
+      await worker.fetch(request, env, ctx);
+
+      const fetchCalls = global.fetch.mock.calls;
+      const sitemapCall = fetchCalls.find((call) => call.arguments[0].includes('/sitemap.xml')
+        && !call.arguments[0].includes('review123--'));
+
+      assert(sitemapCall, 'Should have fetched origin sitemap');
+      assert.strictEqual(
+        sitemapCall.arguments[1].headers.get('x-forwarded-host'),
+        'review123--main--test--adobe.aem.reviews',
+      );
+    });
+
+    it('sets x-forwarded-host to the original host on the metadata request', async () => {
+      const request = new Request('https://review123--main--test--adobe.aem.reviews/', {
+        headers: { host: 'review123--main--test--adobe.aem.reviews' },
+      });
+      await worker.fetch(request, env, ctx);
+
+      const fetchCalls = global.fetch.mock.calls;
+      const metadataCall = fetchCalls.find((call) => call.arguments[0].includes('/metadata.json')
+        && call.arguments[0].includes('/.snapshots/'));
+
+      assert(metadataCall, 'Should have fetched metadata');
+      assert.strictEqual(
+        metadataCall.arguments[1].headers.get('x-forwarded-host'),
+        'review123--main--test--adobe.aem.reviews',
+      );
+    });
+  });
+
   describe('Metadata rewriting', () => {
     it('fetches metadata with correct baseHostname URL', async () => {
       const request = new Request('https://review123--main--test--adobe.aem.reviews/');
