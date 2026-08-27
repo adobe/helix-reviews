@@ -36,7 +36,7 @@
     "mocha": "11.8.0",
     "semantic-release": "25.0.9",
     "semantic-release-slack-bot": "4.0.2",
-    "wrangler": "4.126.0"
+    "wrangler": "4.127.0"
   },
   "dependencies": {
     "cookie": "2.0.1"
