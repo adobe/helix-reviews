@@ -19,8 +19,13 @@ export default defineConfig([
     'dist/*',
   ]),
   {
+    languageOptions: {
+      globals: {
+        cookie: 'readonly',
+      },
+    },
     rules: {
-      'import/no-unresolved': ['error', { ignore: ['@octokit/rest', 'file-type'] }],
+      'import/no-unresolved': ['error', { ignore: ['@octokit/rest', 'file-type', 'cookie'] }],
     },
     plugins: {
       import: recommended.plugins.import,

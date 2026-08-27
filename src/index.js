@@ -144,7 +144,9 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
  * @returns {string} The modified HTML content
  */
 const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
-  if (response.status !== 200) return response.body;
+  if (response.status !== 200) {
+    return response.body;
+  }
 
   const metadataRequest = new Request(incomingRequest);
   metadataRequest.headers.set('accept-encoding', 'identity');
@@ -185,10 +187,14 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
  * @returns {Promise<boolean>} Whether the request is authenticated
  */
 const checkAuthentication = async (metadata, request, reviewInfo, env) => {
-  if (!metadata?.reviewPassword) return true;
+  if (!metadata?.reviewPassword) {
+    return true;
+  }
   const authHeader = request.headers.get('authorization');
   const orgToken = env[`${reviewInfo.owner}-org-token`];
-  if (authHeader === `token ${orgToken}`) return true;
+  if (authHeader === `token ${orgToken}`) {
+    return true;
+  }
 
   const cookies = parseCookie(request.headers.get('cookie') || '');
   const sha256 = async (message) => {
