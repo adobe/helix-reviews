@@ -9,21 +9,29 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+import { defineConfig, globalIgnores } from '@eslint/config-helpers';
+import { recommended, source, test } from '@adobe/eslint-config-helix';
 
-module.exports = {
-  root: true,
-  extends: '@adobe/eslint-config-helix',
-  env: {
-    node: false,
-    browser: true,
+export default defineConfig([
+  globalIgnores([
+    '.vscode/*',
+    'coverage/*',
+    'dist/*',
+  ]),
+  {
+    languageOptions: {
+      globals: {
+        cookie: 'readonly',
+      },
+    },
+    rules: {
+      'import/no-unresolved': ['error', { ignore: ['@octokit/rest', 'file-type', 'cookie'] }],
+    },
+    plugins: {
+      import: recommended.plugins.import,
+    },
+    extends: [recommended],
   },
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2022,
-  },
-  rules: {
-    'import/extensions': ['error', {
-      js: 'always',
-    }],
-  },
-};
+  source,
+  test,
+]);

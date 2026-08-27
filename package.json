@@ -11,7 +11,8 @@
     "semantic-release": "semantic-release",
     "deploy": "wrangler deploy",
     "deploy-ci": "wrangler deploy --config wrangler-ci.toml",
-    "dev": "wrangler dev"
+    "dev": "wrangler dev",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -24,12 +25,14 @@
   },
   "homepage": "https://github.com/adobe/helix-reviews#readme",
   "devDependencies": {
-    "@adobe/eslint-config-helix": "2.0.9",
+    "@adobe/eslint-config-helix": "3.0.30",
     "@semantic-release/changelog": "7.0.0",
     "@semantic-release/exec": "7.1.0",
     "@semantic-release/git": "11.0.1",
     "c8": "12.0.0",
-    "eslint": "8.57.1",
+    "eslint": "9.39.5",
+    "husky": "9.1.7",
+    "lint-staged": "17.3.0",
     "mocha": "11.8.0",
     "semantic-release": "25.0.9",
     "semantic-release-slack-bot": "4.0.2",
@@ -37,5 +40,8 @@
   },
   "dependencies": {
     "cookie": "2.0.1"
+  },
+  "lint-staged": {
+    "*.js": "eslint"
   }
 }
