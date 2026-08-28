@@ -19,13 +19,9 @@ export default defineConfig([
     'dist/*',
   ]),
   {
-    languageOptions: {
-      globals: {
-        cookie: 'readonly',
-      },
-    },
     rules: {
-      'import/no-unresolved': ['error', { ignore: ['@octokit/rest', 'file-type', 'cookie'] }],
+      // `cookie` is exports-map only and cannot be resolved by eslint-plugin-import
+      'import/no-unresolved': ['error', { ignore: ['cookie'] }],
     },
     plugins: {
       import: recommended.plugins.import,

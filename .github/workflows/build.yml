@@ -17,9 +17,9 @@ jobs:
     - name: Install
       run: npm ci
     - name: Lint
-      run: npm run lint || echo "Linting temporarily disabled - will be enforced in separate PR"
+      run: npm run lint
     - name: Unit Test
-      run: npm run test || echo "No tests configured yet"
+      run: npm run test
 
     # Deploy to CI environment
     - name: Deploy to CI
