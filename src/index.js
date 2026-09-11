@@ -110,6 +110,7 @@ const generateSitemap = async (hostname, pages, reviewInfo, incomingRequest) => 
   try {
     const sitemapRequest = new Request(incomingRequest);
     sitemapRequest.headers.set('accept-encoding', 'identity');
+    sitemapRequest.headers.set('x-forwarded-host', sitemapRequest.headers.get('host'));
 
     const sitemapUrl = `https://${getBaseHostname(reviewInfo)}.page/sitemap.xml`;
     const sitemapResp = await fetch(sitemapUrl, sitemapRequest);
@@ -150,6 +151,7 @@ const rewriteMetaTags = async (response, url, reviewInfo, incomingRequest) => {
 
   const metadataRequest = new Request(incomingRequest);
   metadataRequest.headers.set('accept-encoding', 'identity');
+  metadataRequest.headers.set('x-forwarded-host', metadataRequest.headers.get('host'));
 
   const metadataUrl = `https://${getBaseHostname(reviewInfo)}.page/.snapshots/${reviewInfo.reviewId}/metadata.json`;
   const metadataResponse = await fetch(metadataUrl, metadataRequest);
@@ -241,6 +243,7 @@ async function handleRequest(request, env) {
     const manifestUrl = `https://${getBaseHostname(reviewInfo)}.page/.snapshots/${reviewInfo.reviewId}/.manifest.json`;
     const manifestRequest = new Request(incomingRequest);
     manifestRequest.headers.set('accept-encoding', 'identity');
+    manifestRequest.headers.set('x-forwarded-host', manifestRequest.headers.get('host'));
     // since we re-use incoming request headers, we don't want to end up fetching partial manifests
     manifestRequest.headers.delete('range');
     if (env[`${reviewInfo.owner}-org-token`]) {
