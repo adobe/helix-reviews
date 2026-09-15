@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/adobe/helix-reviews/compare/v1.1.2...v1.1.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* set x-forwarded-host on manifest, sitemap, and metadata sub-fetches ([ae34387](https://github.com/adobe/helix-reviews/commit/ae343875ccbc28bfd09f43479e99714a61e4b18c))
+
 ## [1.1.2](https://github.com/adobe/helix-reviews/compare/v1.1.1...v1.1.2) (2026-08-04)
 
 
