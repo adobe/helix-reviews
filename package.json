@@ -34,10 +34,10 @@
     "eslint": "9.39.5",
     "husky": "9.1.7",
     "lint-staged": "17.5.1",
-    "mocha": "12.0.1",
+    "mocha": "12.0.2",
     "semantic-release": "25.0.9",
     "semantic-release-slack-bot": "4.0.2",
-    "wrangler": "4.131.2"
+    "wrangler": "4.136.1"
   },
   "dependencies": {
     "cookie": "2.0.1"
