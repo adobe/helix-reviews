@@ -40,7 +40,7 @@
     "wrangler": "4.156.2"
   },
   "dependencies": {
-    "cookie": "2.0.1"
+    "cookie": "2.0.2"
   },
   "lint-staged": {
     "*.js": "eslint"
